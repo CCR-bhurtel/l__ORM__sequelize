@@ -1,0 +1,76 @@
+class Bar extends Model {
+    fullName() {
+        return this.firstName + ' ' + this.lastName;
+    }
+}
+Bar.init(
+    {
+        id: {
+            type: DataTypes.STRING,
+            primaryKey: true,
+        },
+        firstName: {
+            type: DataTypes.STRING,
+        },
+        lastName: {
+            type: DataTypes.STRING,
+        },
+    },
+    { sequelize, freezeTableName: true, tableName: 'bars' }
+);
+
+const User = sequelize.define(
+    'User',
+    {
+        id: { type: DataTypes.UUID, primaryKey: true },
+        firstName: {
+            type: DataTypes.TEXT,
+            allowNull: false,
+            defaultValue: 'ShreeRam',
+        },
+        lastName: {
+            type: DataTypes.STRING,
+        },
+        uniqueOne: { type: DataTypes.STRING, unique: 'ComposeIndex' },
+        uniqueTwo: { type: DataTypes.STRING, unique: 'ComposeIndex' },
+        date: {
+            type: DataTypes.DATE,
+            defaultValue: DataTypes.NOW,
+        },
+        bar_id: {
+            type: DataTypes.STRING,
+            references: {
+                model: Bar,
+                key: 'id',
+                deferrable: Deferrable.INITIALLY_IMMEDIATE,
+            },
+        },
+    },
+    { freezeTableName: true, tableName: 'users' }
+);
+
+await Account.bulkCreate([
+{ username: 'purushottam', branch: 'new road', amount: 8050, gender: 'm' },
+ { username: 'amrit', branch: 'chitwan', amount: 9050, gender: 'm' },
+{ username: 'amritkodad', branch: 'chitwan', amount: 8050, gender: 'm' },
+ { username: 'sumankodad', branch: 'damak', amount: 6000, gender: 'm' },
+{ username: 'manjul', branch: 'tangol', amount: 3000, gender: 'm' },
+{ username: 'suman', branch: 'damak', amount: 5000, gender: 'm' },
+{ username: 'tulasi', branch: 'bhalwari', amount: 7050, gender: 'f' },
+{ username: 'sital', branch: 'new road', amount: 11050, gender: 'f' },
+ { username: 'cceer', branch: 'bhalwari', amount: 3000, gender: 'm' },
+]);
+
+ where: {
+            branch: {
+                [Op.in]: sequelize.literal(`(SELECT branch FROM accounts GROUP BY branch HAVING sum(amount) > 5000)`),
+            },
+        },
+
+ const accounts = await Account.findAll({
+        where: {
+            amount: { [Op.gt]: 5000 },
+        },
+        limit: 3,
+    });
+    console.log(JSON.stringify(accounts));

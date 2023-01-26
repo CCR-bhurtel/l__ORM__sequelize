@@ -1,0 +1,53 @@
+ // SELECT * FROM accounts WHERE branch = 'bhalwari' AND amount > 5000;
+    const accountsFromBhalwari = await Account.findAll({
+        where: {
+            branch: {
+                [Op.eq]: 'bhalwari',
+            },
+            amount: {
+                [Op.gt]: 5000,
+            },
+        },
+    });
+
+       // const accounts = await Account.findAll({
+    //     where: {
+    //         [Op.or]: [{ branch: 'new road' }, { amount: { [Op.gt]: 5000 } }],
+    //     },
+    // });
+
+
+        const accounts = await Account.findAll({
+        where: {
+            [Op.or]: [{ branch: 'new road' }, { amount: { [Op.gt]: 10000 } }],
+        },
+    });
+
+    
+    const accountsContainingMorBinbranchName = await Account.findAll({
+        where: {
+            branch: {
+                [Op.iLike]: { [Op.any]: ['%bh%', '%ma%'] },
+            },
+        },
+    });
+
+     const accounts = await Account.findAll({
+        attributes: ['branch', [sequelize.fn('SUM', sequelize.col('amount')), 'totalBranchSum']],
+        group: 'branch',
+        where: sequelize.where(sequelize.fn('char_length', sequelize.col('branch')), {
+            [Op.gt]: 5,
+        }),
+    });
+     const accounts = await Account.findAll({
+        attributes: ['branch', [sequelize.fn('SUM', sequelize.col('amount')), 'totalbranchsum']],
+        group: 'branch',
+    });
+
+     const count = await Account.count({
+        where: {
+            amount: { [Op.gt]: 5000 },
+        },
+    });
+    console.log(`There are ${count} rows with amount greater than 5000`);
+   

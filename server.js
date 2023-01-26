@@ -1,4 +1,4 @@
-const { Sequelize, DataTypes, Deferrable, Model } = require('sequelize');
+const { Sequelize, DataTypes, Deferrable, Model, Op } = require('sequelize');
 const express = require('express');
 const dotenv = require('dotenv');
 
@@ -23,61 +23,37 @@ const sequelize = new Sequelize(
         },
     }
 );
-class Bar extends Model {
-    fullName() {
-        return this.firstName + ' ' + this.lastName;
-    }
-}
-Bar.init(
+class Account extends Model {}
+Account.init(
     {
-        id: {
-            type: DataTypes.STRING,
-            primaryKey: true,
-        },
-        firstName: {
-            type: DataTypes.STRING,
-        },
-        lastName: {
-            type: DataTypes.STRING,
-        },
-    },
-    { sequelize, freezeTableName: true, tableName: 'bars' }
-);
-const bar1 = Bar.build({ id: 'dfas', firstName: 'Shishir', lastName: 'Bhurtel' });
-console.log(bar1.fullName());
-const User = sequelize.define(
-    'User',
-    {
-        id: { type: DataTypes.UUID, primaryKey: true },
-        firstName: {
-            type: DataTypes.TEXT,
+        username: {
+            type: DataTypes.STRING(50),
             allowNull: false,
-            defaultValue: 'ShreeRam',
         },
-        lastName: {
-            type: DataTypes.STRING,
+        branch: {
+            type: DataTypes.STRING(50),
         },
-        uniqueOne: { type: DataTypes.STRING, unique: 'ComposeIndex' },
-        uniqueTwo: { type: DataTypes.STRING, unique: 'ComposeIndex' },
-        date: {
-            type: DataTypes.DATE,
-            defaultValue: DataTypes.NOW,
+        amount: {
+            type: DataTypes.INTEGER,
         },
-        bar_id: {
-            type: DataTypes.STRING,
-            references: {
-                model: 'bars',
-                key: 'id',
-                deferrable: Deferrable.INITIALLY_IMMEDIATE,
-            },
+        account_id: {
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true,
+            unique: true,
+        },
+        gender: {
+            type: DataTypes.STRING(5),
         },
     },
-    { freezeTableName: true, tableName: 'users' }
+    { sequelize, initialAutoIncrement: 10, freezeTableName: true, tableName: 'accounts' }
 );
+
 const connectAndSyncDb = async () => {
     try {
         await sequelize.authenticate();
-        await sequelize.sync({ force: true, match: /^test/ });
+        await sequelize.sync({});
+        // force: true, match: /^test/
         console.log('Database connected and synced');
     } catch (err) {
         console.log(err);
@@ -85,12 +61,17 @@ const connectAndSyncDb = async () => {
         process.exit(1);
     }
 };
+(async () => {
+    await connectAndSyncDb();
+    const accounts = await Account.findAll({
+        attributes: ['branch', 'username', [sequelize.fn('SUM', sequelize.col('amount')), 'sum']],
+        group: ['branch', 'username'],
 
-connectAndSyncDb().then(() => {
-    app.listen(9000, () => {
-        console.log('Server listening to port 9000');
+        rollup: true,
     });
-});
+    console.log(JSON.stringify(accounts));
+    // const accounts = await Account.findAll();
+})();
 
 // process.on('uncaughtException', () => {
 //     sequelize.close();
