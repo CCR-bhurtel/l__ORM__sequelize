@@ -51,3 +51,26 @@
     });
     console.log(`There are ${count} rows with amount greater than 5000`);
    
+    const accounts = await Account.findAll({
+        attributes: ['branch', 'username', [sequelize.fn('SUM', sequelize.col('amount')), 'sum']],
+        group: ['branch', 'username'],
+
+        rollup: true,
+    });
+
+     const { count, rows } = await Account.findAndCountAll({
+        attributes: {
+            exclude: ['createdAt', 'updatedAt', 'amount'],
+        },
+        where: {
+            amount: {
+                [Op.gt]: 5000,
+            },
+        },
+        limit: 4,
+        offset: 2,
+        order: [['username', 'DESC']],
+        raw: true,
+    });
+    console.log(count);
+    console.log(rows);

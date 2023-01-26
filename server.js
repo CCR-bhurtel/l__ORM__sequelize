@@ -1,6 +1,7 @@
-const { Sequelize, DataTypes, Deferrable, Model, Op } = require('sequelize');
+const { Sequelize, DataTypes, Deferrable, Model, Op, QueryTypes } = require('sequelize');
 const express = require('express');
 const dotenv = require('dotenv');
+const bcrypt = require('bcrypt');
 
 dotenv.config({ path: './config.env' });
 
@@ -24,17 +25,31 @@ const sequelize = new Sequelize(
     }
 );
 class Account extends Model {}
+
 Account.init(
     {
         username: {
             type: DataTypes.STRING(50),
             allowNull: false,
+            validate: {
+                isAlpha: true,
+            },
         },
         branch: {
             type: DataTypes.STRING(50),
+            validate: {
+                isAlpha: true,
+                isIn: {
+                    args: [['new road', 'tangol', 'jawalakhel', 'damak', 'bhalwari', 'chitwan']],
+                    mgs: 'Dont put in random branches',
+                },
+            },
         },
         amount: {
             type: DataTypes.INTEGER,
+            validate: {
+                isInt: true,
+            },
         },
         account_id: {
             type: DataTypes.INTEGER,
@@ -44,8 +59,16 @@ Account.init(
         },
         gender: {
             type: DataTypes.STRING(5),
+            validate: {
+                isIn: [['m', 'f', 'male', 'female', 'others']],
+                notIn: {
+                    args: [['l', 'g', 'b', 't', 'q']],
+                    msg: 'Lgbtq are not allowed',
+                },
+            },
         },
     },
+
     { sequelize, initialAutoIncrement: 10, freezeTableName: true, tableName: 'accounts' }
 );
 
@@ -63,13 +86,22 @@ const connectAndSyncDb = async () => {
 };
 (async () => {
     await connectAndSyncDb();
-    const accounts = await Account.findAll({
-        attributes: ['branch', 'username', [sequelize.fn('SUM', sequelize.col('amount')), 'sum']],
-        group: ['branch', 'username'],
 
-        rollup: true,
+    // By default the objects returned from queries are instances of sequelize Model, adding raw : true makes them simple js object
+    // limit offset and find
+    // const [results, metadata] = await sequelize.query('SELECT * FROM accounts where amount > 6000');
+    const results = await sequelize.query('SELECT * FROM accounts where branch IN(:branches)', {
+        replacements: {
+            branches: ['bhalwari', 'new road'],
+        },
+        type: QueryTypes.SELECT,
+        model: Account,
+        raw: true,
+
+        mapToModel: true,
     });
-    console.log(JSON.stringify(accounts));
+    console.log(results);
+
     // const accounts = await Account.findAll();
 })();
 
