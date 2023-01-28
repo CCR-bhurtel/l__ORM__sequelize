@@ -49,6 +49,12 @@ Account.init(
             type: DataTypes.INTEGER,
             validate: {
                 isInt: true,
+                isIn: [],
+                isRich(value) {
+                    if (value > 5000) {
+                        throw new TypeError('Rich people are not allowed');
+                    }
+                },
             },
         },
         account_id: {
@@ -95,10 +101,10 @@ const connectAndSyncDb = async () => {
             branches: ['bhalwari', 'new road'],
         },
         type: QueryTypes.SELECT,
-        model: Account,
+        // model: Account,
         raw: true,
 
-        mapToModel: true,
+        // mapToMode                                       l: true, // make instance of accoount model
     });
     console.log(results);
 
