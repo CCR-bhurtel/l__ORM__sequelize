@@ -111,6 +111,8 @@ const connectAndSyncDb = async () => {
     console.log(accounts.count);
 })();
 
+
+
 // process.on('uncaughtException', () => {
 //     sequelize.close();
 //     process.exit(1);

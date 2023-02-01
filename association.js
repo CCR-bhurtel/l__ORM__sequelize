@@ -148,4 +148,15 @@ const connectAndSyncDb = async () => {
     //     },
     //     include: 'Weather',
     // });
+
+    // using association for key other than primary
+/*
+belongsto relationship:
+    Bar.belongsTo(Foo, {target:"name", foreignKey:"fooName"})
+
+hasOne and hasMany relationship
+    Foo.hasOne(Bar, { sourceKey: 'name', foreignKey: 'fooName' });
+    Bar.hasMany(Baz, { sourceKey: 'title', foreignKey: 'barTitle' });
+*/
 })();
+
