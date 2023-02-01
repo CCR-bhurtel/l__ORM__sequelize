@@ -55,8 +55,8 @@ Weather.init(
     }
 );
 
-City.hasMany(Weather, { onDelete: 'RESTRICT' });
-Weather.belongsTo(City, { onUpdate: 'CASCADE' });
+City.hasMany(Weather, { onDelete: 'RESTRICT', foreignKey: { name: 'city_id' } });
+Weather.belongsTo(City, { onUpdate: 'CASCADE', foreignKey: { name: 'city_id' } });
 
 const connectAndSyncDb = async () => {
     try {
@@ -69,6 +69,35 @@ const connectAndSyncDb = async () => {
         sequelize.close();
         process.exit(1);
     }
+    const butwal = await City.findOne({
+        where: {
+            name: 'Butwal',
+        },
+        include: [
+            {
+                model: 'Weather',
+                where: {
+                    maxTemp: { [Op.gt]: 10 },
+                },
+            },
+        ],
+    });
+    // console.log(butwal.toJSON());
+    const totalWeatherRecordsOfButwal = await butwal.countWeather();
+    console.log(totalWeatherRecordsOfButwal);
+    // await butwal.createWeather({ maxTemp: 20, minTemp: 12, date: new Date('2023-2-1') });
+    // const weather = await Weather.findOne({
+    //     where: {
+    //         id: 1,
+    //     },
+    //     include: 'City',
+    // });
+
+    // console.log(weather.toJSON());
+
+    // await butwal.setWeather(weather1);
+
+    // await butwal.setWeather(weather2);
     // const city = await City.findOne({
     //     where: {
     //         name: 'Butwal',
@@ -101,4 +130,22 @@ const connectAndSyncDb = async () => {
     //     { maxTemp: 26, minTemp: 7, date: new Date('2023-1-28') },
     //     { maxTemp: 24, minTemp: 13, date: new Date('2023-1-28') },
     // ]);
+
+    // -----------------------Lazy Loading --------------
+    // const city = await City.findOne({
+    //     where: {
+    //         name: 'Butwal',
+    //     },
+    // });
+    // console.log(city.name);
+    // const weather = await city.getWeather();
+    // console.log(weather.maxTemp);
+
+    // ----------------------Eager Loading------------------
+    // const cityWithWeather = await City.findOne({
+    //     where: {
+    //         name: 'Butwal',
+    //     },
+    //     include: 'Weather',
+    // });
 })();

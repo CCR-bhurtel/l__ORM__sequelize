@@ -106,9 +106,9 @@ const connectAndSyncDb = async () => {
 
         // mapToMode                                       l: true, // make instance of accoount model
     });
-    console.log(results);
 
-    // const accounts = await Account.findAll();
+    const accounts = await Account.findAndCountAll({ limit: 5 });
+    console.log(accounts.count);
 })();
 
 // process.on('uncaughtException', () => {
