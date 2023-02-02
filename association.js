@@ -39,7 +39,7 @@ City.init(
         },
     },
 
-    { sequelize, freezeTableName: true, tableName: 'cities' }
+    { paranoid: true, sequelize, freezeTableName: true, tableName: 'cities' }
 );
 
 Weather.init(
@@ -48,11 +48,7 @@ Weather.init(
         minTemp: DataTypes.INTEGER,
         date: DataTypes.DATE,
     },
-    {
-        sequelize,
-        freezeTableName: true,
-        tableName: 'weather',
-    }
+    { sequelize, freezeTableName: true, tableName: 'weather' }
 );
 
 City.hasMany(Weather, { onDelete: 'RESTRICT', foreignKey: { name: 'city_id' } });
@@ -75,16 +71,21 @@ const connectAndSyncDb = async () => {
         },
         include: [
             {
-                model: 'Weather',
+                model: Weather,
                 where: {
-                    maxTemp: { [Op.gt]: 10 },
+                    maxTemp: { [Op.gt]: 12 },
                 },
             },
         ],
     });
-    // console.log(butwal.toJSON());
+    // await City.restore({
+    //     where: {
+    //         name: 'Dang',
+    //     },
+    // });
+    console.log(butwal.toJSON());
     const totalWeatherRecordsOfButwal = await butwal.countWeather();
-    console.log(totalWeatherRecordsOfButwal);
+    // console.log(totalWeatherRecordsOfButwal);
     // await butwal.createWeather({ maxTemp: 20, minTemp: 12, date: new Date('2023-2-1') });
     // const weather = await Weather.findOne({
     //     where: {
@@ -150,7 +151,7 @@ const connectAndSyncDb = async () => {
     // });
 
     // using association for key other than primary
-/*
+    /*
 belongsto relationship:
     Bar.belongsTo(Foo, {target:"name", foreignKey:"fooName"})
 
@@ -159,4 +160,3 @@ hasOne and hasMany relationship
     Bar.hasMany(Baz, { sourceKey: 'title', foreignKey: 'barTitle' });
 */
 })();
-
