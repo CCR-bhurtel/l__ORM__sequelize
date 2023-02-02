@@ -72,19 +72,50 @@ const connectAndSyncDb = async () => {
         include: [
             {
                 model: Weather,
+
                 where: {
-                    maxTemp: { [Op.gt]: 12 },
+                    maxTemp: { [Op.gt]: 5 },
                 },
+
+                required: false,
             },
         ],
+        order: [[Weather, 'maxTemp', 'ASC']],
     });
+    // ordering the populated associations
+
+    // Company.findAll({
+    //     include: Division,
+    //     order: [
+    //       [Division, 'name', 'DESC']
+    //     ]
+    //   });
     // await City.restore({
     //     where: {
     //         name: 'Dang',
     //     },
     // });
-    console.log(butwal.toJSON());
-    const totalWeatherRecordsOfButwal = await butwal.countWeather();
+    // nested associations
+    const weathers = await Weather.findOne({
+        where: { city_id: { [Op.not]: null } },
+        include: [{ model: City, include: [{ model: Weather }] }],
+    });
+    console.log(weathers.toJSON().City.Weather);
+    // User.findAll({
+    //     include: [{
+    //       model: Tool,
+    //       as: 'Instruments',
+    //       include: [{
+    //         model: Teacher,
+    //         where: {
+    //           school: "Woodstock Music School"
+    //         },
+    //         required: false
+    //       }]
+    //     }]
+    //   });
+    // console.log(butwal.toJSON());
+
     // console.log(totalWeatherRecordsOfButwal);
     // await butwal.createWeather({ maxTemp: 20, minTemp: 12, date: new Date('2023-2-1') });
     // const weather = await Weather.findOne({
@@ -159,4 +190,25 @@ hasOne and hasMany relationship
     Foo.hasOne(Bar, { sourceKey: 'name', foreignKey: 'fooName' });
     Bar.hasMany(Baz, { sourceKey: 'title', foreignKey: 'barTitle' });
 */
+    
+    // creating with association
+//  Product.create({
+//     title: 'Chair',
+//     user: {
+//       firstName: 'Mick',
+//       lastName: 'Broadstone',
+//       addresses: [{
+//         type: 'home',
+//         line1: '100 Main St.',
+//         city: 'Austin',
+//         state: 'TX',
+//         zip: '78704'
+//       }]
+//     }
+//   }, {
+//     include: [{
+//       association: Product.User,
+//       include: [ User.Addresses ]
+//     }]
+//   });
 })();
