@@ -32,7 +32,7 @@ Project.init(
         },
     }
 );
-// database, user, password, {host, dialect}
+database, user, password, { host, dialect };
 const sequelize = new Sequelize(
     process.env.DATABASE_NAME,
     process.env.DATABASE_USER,
