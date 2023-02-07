@@ -1,0 +1,29 @@
+    await Player.bulkCreate([
+        { username: 's0me0ne' },
+        { username: 'empty' },
+        { username: 'greenhead' },
+        { username: 'not_spock' },
+        { username: 'bowl_of_petunias' },
+    ]);
+    await Game.bulkCreate([{ name: 'The Big Clash' }, { name: 'Winter Showdown' }, { name: 'Summer Beatdown' }]);
+    await Team.bulkCreate([{ name: 'The Martians' }, { name: 'The Earthlings' }, { name: 'The Plutonians' }]);
+    await GameTeam.bulkCreate([
+        { GameId: 1, TeamId: 1 }, // this GameTeam will get id 1
+        { GameId: 1, TeamId: 2 }, // this GameTeam will get id 2
+        { GameId: 2, TeamId: 1 }, // this GameTeam will get id 3
+        { GameId: 2, TeamId: 3 }, // this GameTeam will get id 4
+        { GameId: 3, TeamId: 2 }, // this GameTeam will get id 5
+        { GameId: 3, TeamId: 3 }, // this GameTeam will get id 6
+    ]);
+
+    // Now let's specify players.
+    // For brevity, let's do it only for the second game (Winter Showdown).
+    // Let's say that that s0me0ne and greenhead played for The Martians, while
+    // not_spock and bowl_of_petunias played for The Plutonians:
+    await PlayerGameTeam.bulkCreate([
+        // In 'Winter Showdown' (i.e. GameTeamIds 3 and 4):
+        { PlayerId: 1, GameTeamId: 3 }, // s0me0ne played for The Martians
+        { PlayerId: 3, GameTeamId: 3 }, // greenhead played for The Martians
+        { PlayerId: 4, GameTeamId: 4 }, // not_spock played for The Plutonians
+        { PlayerId: 5, GameTeamId: 4 }, // bowl_of_petunias played for The Plutonians
+    ]);

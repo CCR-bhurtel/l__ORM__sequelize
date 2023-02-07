@@ -1,0 +1,35 @@
+Database isolation refers to the ability of a database to possible a transaction to execute as if there are no other concurrently running transactions
+ (even though in reality there can be a large number of concurrently running transactions).
+
+when multiple transactions are created in a program and run parallelly then there can 
+arise irreleaent situations. 
+for example, (Dirty Read) there are two transactions t1 and t2, 
+t1 tranasction tries to write a data lets say data A, w(A)
+and parallely tranasction t2 tries to read it, say R(A);
+
+if t2 tries to read if before it has been created from tranasction t2 the logic becomes irrelavent
+The situation is called violations
+There are many mainly three types of voilations namely
+(Dirty Read, Non Repeatable Read, Phantom)
+
+Dirty Read:- the above violation is example of dirty read
+
+Non Repeatable Read:- lets say tranasction t1 reads a column of a row and finds it's value to be 10
+and now t2 updates the the data. when t1 again reads the table, it will find its's value differ from the original one.
+This phenomenon is known as non repeatable read voilation.
+
+Phantom:-When if t1 first reads the data values with query Q(c), where c is condition, if may get two rows.
+Now transaction t2 updates the table and adds a row that fits the above condition. Now if again t1 tries to read the table one extra column
+will appear as a phantom. This phenomenon is phantom voilation.
+
+We have different isolation levels in SQL that may or maynot allows the above violations.
+Isolation levels      Dirty Read      Non Repeatable Read     Phantom
+
+Read Uncommited       possible           possible             possible                     
+
+Read Commited         not possible       possible              possible
+
+Repeatable Read       not possible       not possible          possible
+
+SERIALIZABLE          not possible       not possible          not possible
+
