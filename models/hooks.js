@@ -1,6 +1,7 @@
 // [... validation happens ...]
 
 const { DataTypes, Sequelize, Model } = require('sequelize');
+const { sequelize } = require('../server');
 
 // (3)
 //   afterValidate(instance, options)
@@ -50,6 +51,11 @@ User.init(
 // Method 2 via the .addHook() method
 User.addHook('beforeValidate', (user, options) => {
     user.mood = 'happy';
+});
+User.addHook('afterCreate', (user, options) => {});
+
+sequelize.transaction(async (t1) => {
+    await User.create({ username: 'suman', mood: 'sad' }, { transaction: t1 });
 });
 
 User.addHook('afterValidate', 'someCustomName', (user, options) => {

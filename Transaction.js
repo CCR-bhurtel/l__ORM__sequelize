@@ -83,7 +83,6 @@ connectAndSyncDb().then(async () => {
             },
             { transaction: t }
         );
-
         const sibling = await elder.createSibling({ name: 'Sital', age: 10 }, { transaction: t });
     } catch (e) {
         console.log(e);
@@ -102,7 +101,8 @@ connectAndSyncDb().then(async () => {
     // automatic transaction key for all queries
     sequelize.transaction(
         {
-            isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+            isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE, // most secure
+            // other isolation levels includes READ_COMMITED, READ_UNCOMMITED, REPEATABLE_READ
         },
         (t1) => {
             console.log(namespace.get('transaction'));
