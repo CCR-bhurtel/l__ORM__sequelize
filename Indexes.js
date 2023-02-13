@@ -6,7 +6,7 @@ const sequelize = require('sequelize');
 // 3>  GiST << &< &> >> <<| &<| |&> |>> @> <@ ~= && (location operations)
 // SELECT * FROM places ORDER BY location <-> point '(101,456)' LIMIT 10;
 // 4> SP-GiST
-//  5> GIN
+//  5> GIN for jsonb operations (searching key value, searching key arrays)
 // 6> BRIN
 const User = sequelize.define(
     'User',
